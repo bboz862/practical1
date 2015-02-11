@@ -27,6 +27,7 @@ with gzip.open(train_filename, 'r') as train_fh:
                             'gap':      gap })
 
 # Compute the mean of the gaps in the training data.
+print train_data.shape
 gaps = np.array([datum['gap'] for datum in train_data])
 mean_gap = np.mean(gaps)
 
