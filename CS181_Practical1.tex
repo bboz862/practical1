@@ -6,7 +6,6 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage[procnames]{listings}
-\usepackage{hyperref}
 
 \graphicspath{{/Users/whatever/Documents/Practicals/CS181/}}
 \title{CS181 Practical 1 \\ Predicting the Efficiency of Organic Photovoltaics}
@@ -18,7 +17,7 @@
 \tableofcontents
 \newpage
 \section{Select Meaningful Features}
-We begin by roughly examining the training data set. Our goal is to select a subset of the features that can represent the whole feature set and has a tolerable dimensionality. Apparently the training data set has too many dimensions and too many sample points to be visualized directly. Instead we use some very simple statistics to assess the likelyhood of a particular feature to be informative. One way is to look how wide/narrow the distribution of a given feature is. The most naive way to do this is to obtain the maximum and minimum values of a feature. A plot of the maximum and minimum values of all 256 features are plotted below. Maxima are denoted by red dots and minima green dots. 
+We begin by roughly examining the training data set. Our goal is to select a subset of the features that can represent the whole feature set and has a tolerable dimensionality. Apparently the training data set has too many dimensions and too many sample points to be visualized directly. Instead we use some very simple statistics to assess the likelyhood of a particular feature to be informative. One way is to look how wide/narrow the distribution of a given feature is. The most naive way to do this is to obtain the maximum and minimum values of a feature. A plot of the maximum and minimum values of all 256 features are plotted below. Maxima are denoted by red dots and minima green dots.
 \begin{figure}[h!]
 \centering
 \includegraphics[scale=0.5]{examining_min_and_max.png}
@@ -70,7 +69,7 @@ We altered this to the following command:
   AllChem.GetMorganFingerprintAsBitVect( MolFromSmiles( mol ), 2, nBits= 512)
 \end{lstlisting}
 
-This essentially gave us more features to work with (along with expanding the radius used to generate fingerprints), and we found it ultimately made our predictions significantly more accurate. We then performed all the feature selection (F-test and variance analysis of individual features) above on this new feature set in the same manner as we performed it on the old feature set. The variance selection eliminated fewing than 20 features, but the F-test approximately cut the number of features in half. We  We ended up using 10000 training samples for all our methods, each with 275 features left over after our feature engineering. Using the radial basis functions discussed in the next section, we were able to increase the number of features to 775 for each sample (including the original 275 features) when using all our methods except for SVM. We used scikit-learn modules for all of our algorithms. Our code is located \href{https://github.com/bboz862/practical1.git}{\textbf{here}}.
+This essentially gave us more features to work with, and we found it ultimately made our predictions significantly more accurate. We then performed all the feature selection (F-test and variance analysis of individual features) above on this new feature set in the same manner as we performed it on the old feature set. We ended up using 10000 training samples for all our methods, each with 275 features left over after our feature engineering. Using the radial basis functions discussed in the next section, we were able to increase the number of features to 775 for each sample (including the original 275 features) when using all our methods except for SVM. We used scikit-learn modules for all of our algorithms.
 
 
 \section{Linear Regression}
@@ -119,12 +118,25 @@ If we assume different regression coefficients are independent and have the same
 
 \section{Support Vector Regression}
 
-SVR operates in a manner similar to other regression models, yet different in that the process of training the (simplest version of) the SVR consists of minimizing the $L_2$ norm of the weights subject to a set of equations (for each $i$): $t_i -  \langle \textbf{w}, \textbf{x}_i\rangle\ \leq \epsilon $, $\langle \textbf{w}, \textbf{x}_i \rangle\ + b - t_i \leq \epsilon$, with $\langle \textbf{w}, \textbf{x}_i\rangle\ + b$ as the predicted value of the SVR model on $\textbf{x}_i$, where we define $\langle \textbf{x}, \textbf{y} \rangle = exp(\gamma||x - y||^2)$ (this is called an RBF kernel). We used the default value of epsilon and C provided by scikit-learn ($0.1$ and $1$), but we performed fivefold cross validation (in the same manner as we did for the other regression models) to determine the optimal parameter of $\gamma$ (a value used in the kernel function for the SVR). We chose among the set $\{0.01, 0.05, 0.1, 0.5, 1\}$ and found that $\gamma = 0.05$ yielded the best results, with an error of $\approx 0.076$ on the training data set and an error of $0.125$ on the testing data set.
+SVR operates in a manner similar to other regression models, yet different in that the process of training the (simplest version of) the SVR consists of minimizing the $L_2$ error of the weights subject to a set of equations (for each $i$): $t_i - \textbf{w}^T\textbf{x}_i \leq \epsilon$, $\textbf{w}^T\textbf{x}_i + C - t_i \leq \epsilon$, with $\textbf{w}^T\textbf{x}_i + C$ as the predicted value of the SVR model on $\textbf{x}_i$. We used the default value of epsilon and C provided by scikit-learn ($0.1$ and $1$), but we performed cross validation (in the same manner as we did for the other regression models) to determine the optimal parameter of $\gamma$ (a value used in the kernel function for the SVR). We chose among the set $\{0.01, 0.05, 0.1, 0.5, 1\}$ and found that $\gamma = 0.05$ yielded the best results, with an error of $\approx 0.076$ on the training data set and an error of $0.125$ on the testing data set.
 
 \section{Conclusions}
 
 We ultimately ended up using the Support Vector Regression method for the Kaggle competition, which yielded an error of $0.08236$.
 
+The summary of our errors is listed in the table below:
+
+\begin{tabular}{| l ||  c | r |}
+	\hline
+  \textbf{ } & Error on Training & Error on Testing \\ \hline
+  Ridge Regression & .149 & .159 \\\hline
+  Lasso Regression & .151 & .161 \\\hline
+  Elastic Network Regression & .151 & .161\\ \hline
+	Bayesian Linear Regression & .150 & .161 \\\hline
+	Support Vector Regression & .076 & 0.125 \\\hline
+\end{tabular}
+
 Throughout this practical, we found that the determinative factor of the success of our predictions lay mostly in our feature selection and engineering. Without that, the predictive error for each of the models was not too far of from the predictive error of the other models. In that sense, the critical aspect of this project wasn't really the model we chose, but ultimately how we selected and modified our features based on the original SMILE strings.
+
 
 \end{document}
