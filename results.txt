@@ -1,0 +1,65 @@
+RIDGE
+
+There are 275 features and 10000 samples in the training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+The penalty given by the regression algorithm is 0.1
+On the training data set the average error of prediction is 0.148352429848
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.160467708426
+ 
+There are 275 features and 10000 samples in the training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+On the training data set the average error of prediction is 0.149561212482
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.159093633663
+
+LASSO
+
+There are 275 features and 10000 samples in training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+The penalty given by the regression algorithm is 1e-05
+On the training data set the average error of prediction is 0.151511037816
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.161665202955
+ 
+There are 275 features and 10000 samples in training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+On the training data set the average error of prediction is 0.15103177104
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.160739171169
+
+ELASTIC CV
+
+There are 275 features and 10000 samples in the training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+The penalty given by the regression algorithm is 6.34417422e-05
+The ration between l1 and l2 is 1.0
+On the training data set the average error of prediction is 0.164668728993
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.170691908097
+
+RIDGE BAYESIAN
+
+There are 275 features and 10000 samples in the training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+On the training data set the average error of prediction is 0.149942172314
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.160946582136
+
+SVM
+
+There are 275 features and 10000 samples in the training data
+On the training data set the average error of prediction is 0.0761318118397
+On the testing data set the average error of prediction is 0.125243411829
