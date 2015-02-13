@@ -1,0 +1,26 @@
+There are 275 features and 10000 samples in the training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+The penalty given by the regression algorithm is 0.1
+On the training data set the average error of prediction is 0.148352429848
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.160467708426
+ 
+There are 275 features and 10000 samples in the training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+On the training data set the average error of prediction is 0.149561212482
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.159093633663
+ 
+There are 275 features and 10000 samples in training data
+After transformation by radial basis functions the training data now has dimensions of (10000, 500)
+Plus the identity basis the training data has dimensions of (10000, 775)
+The penalty given by the regression algorithm is 1e-05
+On the training data set the average error of prediction is 0.151511037816
+After transformation by radial basis functions the testing data now has dimensions of (5000, 500)
+Plus the identity basis the testing data has dimensions of (5000, 775)
+On the testing data set the average error of prediction is 0.161665202955
+ 
