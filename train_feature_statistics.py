@@ -8,7 +8,7 @@ train_filename = 'train.csv'
 compact_filename  = 'meaningful_features.csv'
 meaningful_features_indice_filename = 'meaningful_features_indice.csv'
 
-Load the training file.
+#Load the training file.
 train_data = []
 with open(train_filename, 'r') as train_fh:
 

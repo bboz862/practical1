@@ -3,66 +3,45 @@ import csv
 import math
 from sklearn import feature_selection
 
-class read_compact_data:
-
-	def __init__(self, filename):
-		
-		with open(filename, 'r') as fileheader:
-		    csv_file = csv.reader(fileheader, delimiter=',', quotechar='"')
-
-		    csv_data = []
-		    
-		    for row in csv_file:
-		    	features = np.array([float(x) for x in row[0:31]])
-		        energy_gap      = float(row[31])		        
-		        csv_data.append({'features':      features,
-		                            'energy_gap':   energy_gap })
-
-		self._data_array = np.array([dict_item['features'] for dict_item in csv_data])
-		self._energy_gap_array = np.array([dict_item['energy_gap'] for dict_item in csv_data])
-
-		del csv_data
-
-	def get_data(self):
-		return self._data_array
-
-	def get_gap(self):
-		return self._energy_gap_array
-
-meaningful_features_indice_filename = 'meaningful_features_indice.csv'
+train_filename = 'train.csv'
 new_meaningful_features_indice_filename = 'new_meaningful_features_indice.csv'
+new_meaningful_filename = 'new_meaningful_features.csv'
 
-read_molecule_data = read_compact_data('meaningful_features.csv')
-molecular_features = read_molecule_data.get_data()
-gaps = read_molecule_data.get_gap()
+train_data = []
+with open(train_filename, 'r') as train_fh:
 
-print molecular_features.shape
+    # Parse it as a CSV file.
+    train_csv = csv.reader(train_fh, delimiter=',', quotechar='"')
+    
+    # Skip the header row.
+    next(train_csv, None)
 
-F_array, pval_array = feature_selection.f_regression(molecular_features, gaps)
+    # Load the data. For speed only load 100K samples.
+    for row in train_csv:
+        smiles   = row[0]
+        features = np.array([float(x) for x in row[1:257]])
+        gap      = float(row[257])
+        
+        train_data.append({ 'smiles':   smiles,
+                            'features': features,
+                            'gap':      gap })
 
-with open(meaningful_features_indice_filename,'r') as indice_fh:
-    indice_csv = csv.reader(indice_fh, delimiter=',', quotechar='"')
-    for row in indice_csv:
-    	meaningful_features_indice = row
+# molecular_features = np.array([dataitem['features'] for dataitem in train_data])
+# gaps = np.array([dataitem['gap'] for dataitem in train_data])
 
-new_meaningful_features_indice = []
+new_meaningful_features_indice = np.array([0,5,6,24,36,43,67,68,71,86,89,101,118,122,125,131,172,175,186,195,198,199,207,217,224,225,242,247,250,251])
 
-for count in [0, 31]:
-
-	if pval_array[count] < 0.05:
-		new_meaningful_features_indice.append(count)
-
-print new_meaningful_features_indice
+print new_meaningful_features_indice.shape
 
 with open(new_meaningful_features_indice_filename,'w') as indice_fh:
     indice_csv = csv.writer(indice_fh, delimiter=',', quotechar='"')
-    indice_csv.writerow(meaningful_features_indice[new_meaningful_features_indice])
+    indice_csv.writerow(new_meaningful_features_indice)
 
 
 with open(new_meaningful_filename, 'w') as new_meaningful_fh:
     # Produce a CSV file.
     compact_csv = csv.writer(new_meaningful_fh, delimiter=',', quotechar='"')
-    for datum in meaningful_data:
-        compact_row = np.append(datum['features'][meaningful_features_indice[new_meaningful_features_indice]], datum['gap'])
+    for datum in train_data:
+        compact_row = np.append(datum['features'][new_meaningful_features_indice], datum['gap'])
         compact_csv.writerow(compact_row)
 

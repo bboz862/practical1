@@ -2,8 +2,8 @@ import csv
 
 long_filename = 'meaningful_features.csv'
 
-train_filename = 'meaningful_features_600000.csv'
-test_filename  = 'meaningful_features_600000-800000.csv'
+train_filename = 'meaningful_features_100000.csv'
+test_filename  = 'meaningful_features_100000-200000.csv'
 
 input_file        = open(long_filename,'r')
 output_train_file = open( train_filename,'w')
@@ -16,11 +16,11 @@ test_csv = csv.writer(output_test_file, delimiter=',', quotechar='"')
 
 count = 1 
 for row in input_csv:
-	if count > 800000:
+	if count > 200000:
 		break
-	elif count <= 600000:
+	elif count <= 100000:
 		train_csv.writerow(row)
-	elif count <= 800000:
+	elif count <= 200000:
 		test_csv.writerow(row)
 	count += 1
 

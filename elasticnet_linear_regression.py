@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 import math
+from multiprocessing import Process
 from sklearn import linear_model
 from sklearn import cross_validation
 from sklearn import cluster
@@ -63,35 +64,67 @@ def radial_basis_function_transformation(data, centers, width_square):
 	transformed_data_matrix = np.exp(-scaled_distance_square_matrix)
 	return transformed_data_matrix
 
-def main(basis_number = 100, CV_candidates = [0.1, 0.5, 0.7, 0.9, 0.95, 0.99, 1],CV_folds = 10):
+def main(basis_number = 100, CV_candidates = [.1, .5, .7, .9, .95, .99, 1], CV_folds = 10):
 	
-	read_molecule_data = read_compact_data('meaningful_features_100000.csv')
+	#read in training data
+	read_molecule_data = read_compact_data('meaningful_features_200000.csv')
 	molecular_features = read_molecule_data.get_data()
 
+	#get shape of training data
 	feature_number = molecular_features.shape[1]
 	sample_number = molecular_features.shape[0]
-	print feature_number, sample_number
+	print 'There are {} features and {} samples in the training data'.format(feature_number, sample_number)
 
+	#get training target value
 	molecule_energygap = read_molecule_data.get_gap()
 
+	#generate parameters for training basis functions
 	basis_parameter = find_radial_basis_function(molecular_features, basis_number)
 	center_vector = basis_parameter.get_center()
 	width_square_vector = basis_parameter.get_width_square()
 
+	#transform input data based on training basis functions
 	transformed_data_matrix = radial_basis_function_transformation(molecular_features, center_vector, width_square_vector)
-	print transformed_data_matrix.shape
+	print 'After transformation by radial basis functions the training data now has dimensions of {}'.format(transformed_data_matrix.shape)
 
+	#generate stacked output of basis functions (including identity basis)
 	transformed_molecular_features = np.hstack([molecular_features, transformed_data_matrix])
-	print transformed_molecular_features.shape
+	print 'Plus the identity basis the training data has dimensions of {}'.format(transformed_molecular_features.shape)
 
-	elasiticnet_regression = linear_model.ElasticNetCV(l1_ratio =  CV_candidates, max_iter = 10000, cv = cross_validation.KFold(sample_number, n_folds = CV_folds))
-	elasiticnet_regression.fit(transformed_molecular_features, molecule_energygap)
+	#do ElasticNet regression
+	ElasticNet_regression = linear_model.ElasticNetCV(l1_ratio =  CV_candidates, max_iter = 10000, n_jobs = len(CV_candidates), cv = cross_validation.KFold(sample_number, n_folds = CV_folds))
+	ElasticNet_regression.fit(transformed_molecular_features, molecule_energygap)
 	
-	# print elasiticnet_regression.coef_
-	print elasiticnet_regression.alpha_
+	# print ElasticNet_regression.coef_
+	print 'The penalty given by the regression algorithm is {}'.format(ElasticNet_regression.alpha_)
+	print 'The ration between l1 and l2 is {}'.format(ElasticNet_regression.l1_ratio_)
 
-	pridected_gap_energy = elasiticnet_regression.predict(transformed_molecular_features)
-	average_error = math.sqrt( np.dot( (pridected_gap_energy - molecule_energygap), (pridected_gap_energy - molecule_energygap).T ) / float(sample_number) )
-	print average_error
+	#calculate prediction accuracy on training data
+	predicted_train_gap_energy = ElasticNet_regression.predict(transformed_molecular_features)
+	average_train_error = math.sqrt( np.dot( (predicted_train_gap_energy - molecule_energygap), (predicted_train_gap_energy - molecule_energygap).T ) / float(sample_number) )
+	print 'On the training data set the average error of prediction is {}'.format(average_train_error)
 
-if __name__ == '__main__': main(basis_number = 200)
+	#get data and target value test set
+	read_test_data = read_compact_data('meaningful_features_200000-300000.csv')
+	test_molecular_features = read_test_data.get_data()
+	test_molecular_energygap = read_test_data.get_gap()
+	test_sample_number = test_molecular_features.shape[0]
+
+	#transform test data based on learned basis function
+	transformed_test_matrix = radial_basis_function_transformation(test_molecular_features, center_vector, width_square_vector)
+	print 'After transformation by radial basis functions the testing data now has dimensions of {}'.format(transformed_test_matrix.shape)
+
+	#generate stacked output of basis functions
+	transformed_test_features = np.hstack([test_molecular_features, transformed_test_matrix])
+	print 'Plus the identity basis the testing data has dimensions of {}'.format(transformed_test_features.shape)
+
+	#make prediction on test set
+	predicted_test_gapenergy = ElasticNet_regression.predict(transformed_test_features)
+	average_test_error = math.sqrt( np.dot( (predicted_test_gapenergy - test_molecular_energygap), (predicted_test_gapenergy - test_molecular_energygap).T ) / float(test_sample_number) )
+	print 'On the testing data set the average error of prediction is {}'.format(average_test_error)
+
+if __name__ == '__main__': 
+	
+	p = Process(target = main, args = ( 400, [.99, .995, 1]))
+	p.start()
+	p.join()
